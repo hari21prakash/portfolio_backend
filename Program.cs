@@ -114,9 +114,10 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // ---------- Database migration + seed ----------
-/*try
+// ---------- Database migration ----------
+try
 {
-    Console.WriteLine("Starting database migration and seeding...");
+    Console.WriteLine("Starting database migration...");
 
     using (var scope = app.Services.CreateScope())
     {
@@ -124,26 +125,16 @@ var app = builder.Build();
             scope.ServiceProvider
                 .GetRequiredService<ApplicationDbContext>();
 
-        var logger =
-            scope.ServiceProvider
-                .GetRequiredService<ILogger<Program>>();
-
-        await DbSeeder.SeedAsync(
-            db,
-            app.Configuration,
-            logger
-        );
+        await db.Database.MigrateAsync();
     }
 
-    Console.WriteLine("Database migration and seeding completed.");
+    Console.WriteLine("Database migration completed.");
 }
 catch (Exception ex)
 {
-    Console.WriteLine("DATABASE STARTUP ERROR:");
+    Console.WriteLine("DATABASE MIGRATION ERROR:");
     Console.WriteLine(ex.ToString());
-
-    throw;
-}*/
+}
 
 // ---------- Middleware pipeline ----------
 app.UseMiddleware<ExceptionMiddleware>();
