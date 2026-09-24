@@ -12,8 +12,8 @@ using PortfolioApi.Data;
 namespace PortfolioApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260924064512_Baseline")]
-    partial class Baseline
+    [Migration("20260924172535_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -198,7 +198,7 @@ namespace PortfolioApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Field")
                         .HasColumnType("text");
@@ -215,7 +215,7 @@ namespace PortfolioApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -243,7 +243,7 @@ namespace PortfolioApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -257,7 +257,7 @@ namespace PortfolioApi.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("TechnologiesUsed")
                         .HasColumnType("text");
