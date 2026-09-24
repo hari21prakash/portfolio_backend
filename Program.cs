@@ -162,4 +162,8 @@ app.MapControllers();
 
 Console.WriteLine("Portfolio API started successfully.");
 
+<<<<<<< HEAD
 app.Run();
+=======
+app.Run();
+>>>>>>> 113b5df (first commit)
