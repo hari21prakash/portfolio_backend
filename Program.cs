@@ -114,7 +114,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // ---------- Database migration + seed ----------
-try
+/*try
 {
     Console.WriteLine("Starting database migration and seeding...");
 
@@ -143,7 +143,7 @@ catch (Exception ex)
     Console.WriteLine(ex.ToString());
 
     throw;
-}
+}*/
 
 // ---------- Middleware pipeline ----------
 app.UseMiddleware<ExceptionMiddleware>();
