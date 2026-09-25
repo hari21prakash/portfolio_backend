@@ -78,6 +78,18 @@ public async Task<IActionResult> UploadImage(IFormFile file)
 
     var imageUrl = $"/uploads/profile/{fileName}";
 
+    // Persist immediately so the image survives a refresh even if the
+    // admin never clicks "Save Changes" after uploading.
+    var profile = await _db.Profiles.FirstOrDefaultAsync();
+    if (profile is null)
+    {
+        profile = new Models.Profile();
+        _db.Profiles.Add(profile);
+    }
+    profile.ProfileImageUrl = imageUrl;
+    profile.UpdatedAt = DateTime.UtcNow;
+    await _db.SaveChangesAsync();
+
     return Ok(new
     {
         data = new
@@ -119,6 +131,17 @@ public async Task<IActionResult> UploadResume(IFormFile file)
     }
 
     var resumeUrl = $"/uploads/resumes/{fileName}";
+
+    // Persist immediately, same reasoning as the image upload above.
+    var profile = await _db.Profiles.FirstOrDefaultAsync();
+    if (profile is null)
+    {
+        profile = new Models.Profile();
+        _db.Profiles.Add(profile);
+    }
+    profile.ResumeUrl = resumeUrl;
+    profile.UpdatedAt = DateTime.UtcNow;
+    await _db.SaveChangesAsync();
 
     return Ok(new
     {
