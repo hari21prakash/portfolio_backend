@@ -46,12 +46,10 @@ if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
     );
 }
 
-var allowedOrigins =
-    builder.Configuration
-        .GetSection("Cors:AllowedOrigins")
-        .Get<string[]>()
-    ?? Array.Empty<string>();
-
+var allowedOrigins = new[]
+{
+    builder.Configuration["Cors:AllowedOrigin"]
+}.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 // ---------- Services ----------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
