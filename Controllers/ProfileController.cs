@@ -71,10 +71,17 @@ public async Task<IActionResult> UploadImage(IFormFile file)
     var fileName = $"{Guid.NewGuid()}{extension}";
     var filePath = Path.Combine(uploadsFolder, fileName);
 
-    using (var stream = new FileStream(filePath, FileMode.Create))
+    /*using (var stream = new FileStream(filePath, FileMode.Create))
     {
         await file.CopyToAsync(stream);
-    }
+    }*/
+    using (var stream = new FileStream(filePath, FileMode.Create))
+{
+    await file.CopyToAsync(stream);
+}
+
+Console.WriteLine($"IMAGE SAVED: {filePath}");
+Console.WriteLine($"IMAGE EXISTS: {System.IO.File.Exists(filePath)}");
 
     var imageUrl = $"/uploads/profile/{fileName}";
 
