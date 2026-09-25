@@ -45,11 +45,14 @@ if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
         "Jwt:Key must be configured and at least 32 characters long."
     );
 }
+var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"];
 
-var allowedOrigins = new[]
+if (string.IsNullOrWhiteSpace(allowedOrigin))
 {
-    builder.Configuration["Cors:AllowedOrigin"]
-}.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+    throw new InvalidOperationException(
+        "Cors:AllowedOrigin is not configured."
+    );
+}
 // ---------- Services ----------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -67,13 +70,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("PortfolioCorsPolicy", policy =>
     {
-        if (allowedOrigins.Length > 0)
-        {
-            policy
-                .WithOrigins(allowedOrigins)
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        }
+        policy
+            .WithOrigins(allowedOrigin)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
