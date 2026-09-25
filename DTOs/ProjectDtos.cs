@@ -89,8 +89,13 @@ public static class ProjectMapping
         p.GithubUrl = dto.GithubUrl;
         p.LiveUrl = dto.LiveUrl;
         p.Featured = dto.Featured;
-        p.StartDate = dto.StartDate;
-        p.EndDate = dto.EndDate;
+        p.StartDate = dto.StartDate.HasValue
+    ? DateTime.SpecifyKind(dto.StartDate.Value, DateTimeKind.Utc)
+    : null;
+
+p.EndDate = dto.EndDate.HasValue
+    ? DateTime.SpecifyKind(dto.EndDate.Value, DateTimeKind.Utc)
+    : null;
         p.DisplayOrder = dto.DisplayOrder;
         p.IsActive = dto.IsActive;
         p.UpdatedAt = DateTime.UtcNow;
