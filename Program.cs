@@ -115,24 +115,70 @@ var app = builder.Build();
 
 // ---------- Database migration + seed ----------
 // ---------- Database migration ----------
+// ---------- Database migration + admin seed ----------
 try
 {
     Console.WriteLine("Starting database migration...");
 
     using (var scope = app.Services.CreateScope())
     {
-        var db =
-            scope.ServiceProvider
-                .GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
 
+        // Apply pending EF Core migrations
         await db.Database.MigrateAsync();
-    }
 
-    Console.WriteLine("Database migration completed.");
+        Console.WriteLine("Database migration completed.");
+
+        // ---------- Seed Admin User ----------
+        var adminUsername = builder.Configuration["Admin:Username"];
+        var adminEmail = builder.Configuration["Admin:Email"];
+        var adminPassword = builder.Configuration["Admin:Password"];
+
+        if (string.IsNullOrWhiteSpace(adminUsername) ||
+            string.IsNullOrWhiteSpace(adminEmail) ||
+            string.IsNullOrWhiteSpace(adminPassword))
+        {
+            Console.WriteLine(
+                "Admin seed skipped: Admin credentials are not configured."
+            );
+        }
+        else
+        {
+            var existingAdmin = await db.AdminUsers
+                .FirstOrDefaultAsync(u => u.Username == adminUsername);
+
+            if (existingAdmin == null)
+            {
+                var adminUser = new PortfolioApi.Models.AdminUser
+                {
+                    Username = adminUsername,
+                    Email = adminEmail,
+                    PasswordHash =
+                        BCrypt.Net.BCrypt.HashPassword(adminPassword),
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                db.AdminUsers.Add(adminUser);
+
+                await db.SaveChangesAsync();
+
+                Console.WriteLine(
+                    $"Admin user '{adminUsername}' created successfully."
+                );
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"Admin user '{adminUsername}' already exists."
+                );
+            }
+        }
+    }
 }
 catch (Exception ex)
 {
-    Console.WriteLine("DATABASE MIGRATION ERROR:");
+    Console.WriteLine("DATABASE MIGRATION/SEED ERROR:");
     Console.WriteLine(ex.ToString());
 }
 
