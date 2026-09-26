@@ -45,12 +45,22 @@ if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
         "Jwt:Key must be configured and at least 32 characters long."
     );
 }
-var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"];
+/*var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"];
 
 if (string.IsNullOrWhiteSpace(allowedOrigin))
 {
     throw new InvalidOperationException(
         "Cors:AllowedOrigin is not configured."
+    );
+}*/
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
+if (allowedOrigins == null || allowedOrigins.Length == 0)
+{
+    throw new InvalidOperationException(
+        "Cors:AllowedOrigins is not configured."
     );
 }
 // ---------- Services ----------
@@ -66,7 +76,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped(typeof(PortfolioApi.Services.Generic.CrudService<>));
 
 // ---------- CORS ----------
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("PortfolioCorsPolicy", policy =>
     {
@@ -75,8 +85,17 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
+});*/
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PortfolioCorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
-
 // ---------- Authentication ----------
 builder.Services.AddAuthentication(options =>
 {
